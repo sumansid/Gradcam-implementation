@@ -44,23 +44,15 @@ img_1 = img_to_array(img_1_initial)
 img_1 = img_1.reshape((1, img_1.shape[0], img_1.shape[1], img_1.shape[2]))
 img_1 = preprocess_input(img_1)
 
-
-# In[6]:
-
-
 predict = model.predict(img_1)
 decode_predictions(predict)
-
-
-# In[108]:
-
 
 last_layer = model.get_layer('block5_conv3')
 grads = keras.backend.gradients(model.output,last_layer.output)[0]
 print(grads)
 
 
-# In[109]:
+
 
 
 pooled_grads = keras.backend.mean(grads,axis=(0,1,2))
@@ -89,15 +81,8 @@ heatmap = np.maximum(heatmap,0)
 # Upscaling
 heatmap_resized = resize(heatmap, (224,224), preserve_range=True)
 
-
-# In[113]:
-
-
 plt.imshow(heatmap_resized)
 plt.imshow(img_1_initial, alpha=0.5)
-
-
-# In[94]:
 
 
 def grad_cam(model, image, cls, layer_name):
@@ -130,39 +115,9 @@ plt.imshow(grad_cam(model, img_1, 2,"block5_conv3" ), alpha=1)
 
 model.summary()
 
-
-# In[34]:
-
-
 conv_output = model.get_layer("block5_conv3").output
-
-
-# In[35]:
 
 
 grads = keras.backend.gradients(y_c, conv_output)[0]
 
-
-# In[37]:
-
-
 keras.backend.function([model.input], [conv_output, grads])
-
-
-# In[77]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
