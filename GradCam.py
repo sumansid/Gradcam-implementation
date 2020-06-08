@@ -4,8 +4,6 @@
 # ## GradCAM Implementation 
 # https://arxiv.org/pdf/1610.02391.pdf
 
-# In[1]:
-
 
 import numpy as np
 import keras 
@@ -17,26 +15,10 @@ import matplotlib.pyplot as plt
 from IPython.display import Image
 
 
-# In[2]:
-
-
 # Using VGG16 Model
-
-
-# In[3]:
-
-
 model = VGG16(weights="imagenet")
 
-
-# In[4]:
-
-
 print(model.summary())
-
-
-# In[5]:
-
 
 img_1_initial = load_img("cute-puppy-body-image.jpg", target_size=(224, 224))
 plt.imshow(img_1_initial)
@@ -49,34 +31,18 @@ decode_predictions(predict)
 
 last_layer = model.get_layer('block5_conv3')
 grads = keras.backend.gradients(model.output,last_layer.output)[0]
-print(grads)
-
-
-
-
 
 pooled_grads = keras.backend.mean(grads,axis=(0,1,2))
 iterate = keras.backend.function([model.input],[pooled_grads,last_layer.output[0]])
 pooled_grads_value,conv_layer_output = iterate([img_1])
-
-
-# In[110]:
-
 
 for i in range(512):
     conv_layer_output[:,:,i] *= pooled_grads_value[i]
 heatmap = np.mean(conv_layer_output,axis=-1)
 
 
-# In[111]:
-
-
 # Applying ReLU to the heatmap 
 heatmap = np.maximum(heatmap,0)
-
-
-# In[112]:
-
 
 # Upscaling
 heatmap_resized = resize(heatmap, (224,224), preserve_range=True)
@@ -108,15 +74,9 @@ def grad_cam(model, image, cls, layer_name):
 
 plt.imshow(img_1_initial)
 plt.imshow(grad_cam(model, img_1, 2,"block5_conv3" ), alpha=1)
-
-
-# In[91]:
-
-
 model.summary()
 
 conv_output = model.get_layer("block5_conv3").output
-
 
 grads = keras.backend.gradients(y_c, conv_output)[0]
 
